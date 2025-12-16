@@ -1,4 +1,4 @@
-.PHONY: setup install install-test install-prod test test-failed lint format check clean clean-venv bump help
+.PHONY: setup install install-test install-prod test test-failed check clean clean-venv bump help
 
 .DEFAULT_GOAL := help
 
@@ -145,36 +145,30 @@ setup: ## Initialize project structure and environment
 	@echo "📝 Creating git commits for audit trail..."
 	@if [ -d .git ]; then \
 		git add src/ tests/ scripts/ docs/ .github/ && \
-		git commit -m "chore: initialize project structure
-		
-Created by: make setup
-Project: $(PROJECT_NAME)
-Timestamp: $$(date -u +"%Y-%m-%d %H:%M:%S UTC")
-
-- src/$(PROJECT_NAME)/
-- tests/
-- scripts/
-- docs/" || true; \
+		git commit -m "chore: initialize project structure" \
+		           -m "Created by: make setup" \
+		           -m "Project: $(PROJECT_NAME)" \
+		           -m "Timestamp: $$(date -u +"%Y-%m-%d %H:%M:%S UTC")" \
+		           -m "- src/$(PROJECT_NAME)/" \
+		           -m "- tests/" \
+		           -m "- scripts/" \
+		           -m "- docs/" || true; \
 		git add pyproject.toml .pre-commit-config.yaml && \
-		git commit -m "chore: add project configuration
-
-Created by: make setup
-Project: $(PROJECT_NAME)
-
-Configuration files:
-- pyproject.toml (dependencies and tool config)
-- .pre-commit-config.yaml (code quality hooks)
-
-Dependencies:
-- Runtime: none yet
-- Test: pytest, pytest-cov
-- Dev: pytest, pytest-cov, ruff, mypy
-
-Pre-commit hooks:
-- Basic file checks
-- Ruff (linting + formatting)
-- Mypy (type checking)
-- Commitizen (conventional commits)" || true; \
+		git commit -m "chore: add project configuration" \
+		           -m "Created by: make setup" \
+		           -m "Project: $(PROJECT_NAME)" \
+		           -m "Configuration files:" \
+		           -m "- pyproject.toml (dependencies and tool config)" \
+		           -m "- .pre-commit-config.yaml (code quality hooks)" \
+		           -m "Dependencies:" \
+		           -m "- Runtime: none yet" \
+		           -m "- Test: pytest, pytest-cov" \
+		           -m "- Dev: pytest, pytest-cov, ruff, mypy" \
+		           -m "Pre-commit hooks:" \
+		           -m "- Basic file checks" \
+		           -m "- Ruff (linting + formatting)" \
+		           -m "- Mypy (type checking)" \
+		           -m "- Commitizen (conventional commits)" || true; \
 		echo "✅ Git commits created"; \
 		echo ""; \
 		echo "📤 Pushing to remote..."; \
@@ -266,4 +260,14 @@ help: ## Show this help message
 	@echo "  make setup  - Initialize project structure (auto-detects name from folder)"
 	@echo ""
 	@echo "Available targets:"
-	@grep -E '^[a-zA-Z_-]+:.*?## .*$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-20s\033[0m %s\n", $1, $2}'
+	@echo "  setup                Initialize project structure and environment"
+	@echo "  install              Install package with dev dependencies"
+	@echo "  install-test         Install package with test dependencies (CI/testing)"
+	@echo "  install-prod         Install package without dev/test dependencies"
+	@echo "  test                 Run tests with coverage"
+	@echo "  test-failed          Run only previously failed tests"
+	@echo "  check                Run linting, formatting, and tests"
+	@echo "  clean                Remove build artifacts and cache files"
+	@echo "  clean-venv           Remove virtual environment"
+	@echo "  bump                 Bump version and update changelog using commitizen"
+	@echo "  help                 Show this help message"
